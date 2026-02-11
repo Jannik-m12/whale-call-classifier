@@ -1,0 +1,16 @@
+# Dataset (too large for GitHub - download via script)
+data/watkins_dataset/
+data/raw/
+data/processed/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

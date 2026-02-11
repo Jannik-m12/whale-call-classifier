@@ -1,0 +1,38 @@
+# Whale Call Classifier Configuration
+
+model:
+  name: "whale_call_classifier"
+  version: "1.0"
+  num_classes: 27
+
+data:
+  raw_data_path: "data/raw/"
+  processed_data_path: "data/processed/"
+  dataset_path: "data/watkins_dataset/"
+  audio_file_extension: ".wav"
+  min_samples_per_species: 21
+  target_sample_rate: 16000
+  target_duration_sec: 5.0
+
+training:
+  batch_size: 32
+  epochs: 50
+  learning_rate: 0.001
+  validation_split: 0.15
+  test_split: 0.15
+  use_class_weights: true
+
+features:
+  mel_spectrogram:
+    n_mels: 128
+    n_fft: 2048
+    hop_length: 512
+  mfcc:
+    n_mfcc: 13
+    n_fft: 2048
+    hop_length: 512
+
+visualization:
+  spectrogram:
+    figsize: [10, 4]
+    cmap: "viridis"
