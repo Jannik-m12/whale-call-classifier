@@ -34,20 +34,25 @@ def get_species_with_min_samples(dataset, min_samples=MIN_SAMPLES):
     
     return selected_species
 
-def audio_to_melspectrogram(audio_array, sr):
-    """Convert audio to mel-spectrogram"""
+def audio_to_melspectrogram(audio_array, sr, min_duration=2.0, max_duration=60.0):
+    """Convert audio to mel-spectrogram with variable length (no padding to fixed duration)"""
+    # Check original duration before processing
+    original_duration = len(audio_array) / sr
+    
+    # Skip clips that are too short or too long
+    if original_duration < min_duration:
+        return None  # Too short, insufficient data
+    if original_duration > max_duration:
+        return None  # Too long, likely outlier
+    
     # Resample if needed
     if sr != SAMPLE_RATE:
         audio_array = librosa.resample(audio_array, orig_sr=sr, target_sr=SAMPLE_RATE)
     
-    # Pad or trim to fixed length
-    target_length = DURATION * SAMPLE_RATE
-    if len(audio_array) < target_length:
-        audio_array = np.pad(audio_array, (0, target_length - len(audio_array)))
-    else:
-        audio_array = audio_array[:target_length]
+    # NO PADDING - Keep natural length!
+    # Remove the fixed-length padding/trimming entirely
     
-    # Generate mel-spectrogram
+    # Generate mel-spectrogram with natural time dimension
     mel_spec = librosa.feature.melspectrogram(
         y=audio_array,
         sr=SAMPLE_RATE,
@@ -58,17 +63,20 @@ def audio_to_melspectrogram(audio_array, sr):
     # Convert to log scale (dB)
     mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
     
-    return mel_spec_db
+    return mel_spec_db  # Shape: (128, variable_time_frames)
 
-def process_split(dataset_split, selected_species, species_to_int, split_name="train"):
-    """Process a single dataset split.
-    Uses Audio(decode=False) + soundfile to bypass torchcodec."""
-    X = []
-    y = []
+
+def process_split_variable_length(dataset_split, selected_species, species_to_int, split_name="train"):
+    """Process split with variable-length spectrograms"""
+    spectrograms = []
+    labels = []
     skipped = 0
     errors = 0
+    filtered_short = 0
+    filtered_long = 0
+    duration_stats = []
     
-    # Disable HuggingFace audio decoding — read raw bytes instead
+    # Disable HuggingFace audio decoding
     dataset_split = dataset_split.cast_column("audio", Audio(decode=False))
     
     for idx in tqdm(range(len(dataset_split)), desc=f"  {split_name}"):
@@ -81,7 +89,7 @@ def process_split(dataset_split, selected_species, species_to_int, split_name="t
                 skipped += 1
                 continue
             
-            # Decode audio manually with soundfile (bypasses torchcodec)
+            # Decode audio manually with soundfile
             audio_bytes = sample['audio']['bytes']
             audio_array, sr = sf.read(io.BytesIO(audio_bytes))
             audio_array = audio_array.astype(np.float32)
@@ -90,11 +98,22 @@ def process_split(dataset_split, selected_species, species_to_int, split_name="t
             if audio_array.ndim > 1:
                 audio_array = audio_array.mean(axis=1)
             
-            # Convert to spectrogram
+            # Track original duration
+            original_duration = len(audio_array) / sr
+            duration_stats.append(original_duration)
+            
+            # Convert to spectrogram (NO FIXED LENGTH!)
             mel_spec = audio_to_melspectrogram(audio_array, sr)
             
-            X.append(mel_spec)
-            y.append(species_to_int[species])
+            if mel_spec is None:
+                if original_duration < 2.0:  # Updated threshold
+                    filtered_short += 1
+                else:
+                    filtered_long += 1
+                continue
+            
+            spectrograms.append(mel_spec)
+            labels.append(species_to_int[species])
             
         except Exception as e:
             errors += 1
@@ -102,8 +121,17 @@ def process_split(dataset_split, selected_species, species_to_int, split_name="t
                 print(f"    Error sample {idx}: {e}")
             continue
     
-    print(f"    ✅ Processed: {len(X)}, Skipped: {skipped}, Errors: {errors}")
-    return np.array(X), np.array(y)
+    # Print statistics
+    print(f"    ✅ Processed: {len(spectrograms)}")
+    print(f"    📊 Skipped (wrong species): {skipped}")
+    print(f"    📉 Filtered short (<2.0s): {filtered_short}")
+    print(f"    📉 Filtered long (>60s): {filtered_long}")
+    print(f"    ❌ Errors: {errors}")
+    if duration_stats:
+        print(f"    📏 Duration range: {min(duration_stats):.2f}s - {max(duration_stats):.2f}s")
+    
+    # Return as list (not numpy array) since shapes vary
+    return spectrograms, np.array(labels)
 
 def main():
     print("🐋 Whale Call Classifier - Preprocessing Pipeline")
@@ -122,41 +150,44 @@ def main():
     species_to_int = {species: idx for idx, species in enumerate(selected_species)}
     
     print(f"\n🎵 Converting audio to mel-spectrograms...")
-    print(f"   Sample rate: {SAMPLE_RATE} Hz, Duration: {DURATION}s, Mel bins: {N_MELS}")
+    print(f"   Sample rate: {SAMPLE_RATE} Hz, Variable duration, Mel bins: {N_MELS}")
     
     # Process train split
     print(f"\n📦 Processing train split...")
-    X_train, y_train = process_split(dataset['train'], selected_species, species_to_int, "train")
-    
+    X_train, y_train = process_split_variable_length(dataset['train'], selected_species, species_to_int, "train")
+
     # Process test split
     print(f"\n📦 Processing test split...")
-    X_test, y_test = process_split(dataset['test'], selected_species, species_to_int, "test")
+    X_test, y_test = process_split_variable_length(dataset['test'], selected_species, species_to_int, "test")
     
     print(f"\n✅ Results:")
-    print(f"   Train — X: {X_train.shape}, y: {y_train.shape}")
-    print(f"   Test  — X: {X_test.shape}, y: {y_test.shape}")
+    print(f"   Train — X: {len(X_train)} spectrograms, y: {y_train.shape}")
+    print(f"   Test  — X: {len(X_test)} spectrograms, y: {y_test.shape}")
     
     if len(X_train) == 0:
         print("❌ No samples processed. Aborting.")
         return
     
-    # Save processed data
+    # Save processed data (as pickle since shapes vary)
     os.makedirs('./data/processed', exist_ok=True)
-    
-    np.save('./data/processed/X_train.npy', X_train)
+
+    with open('./data/processed/X_train_variable.pkl', 'wb') as f:
+        pickle.dump(X_train, f)
+    with open('./data/processed/X_test_variable.pkl', 'wb') as f:
+        pickle.dump(X_test, f)
+
     np.save('./data/processed/y_train.npy', y_train)
-    np.save('./data/processed/X_test.npy', X_test)
     np.save('./data/processed/y_test.npy', y_test)
-    
+
     # Save species mapping
     with open('./data/processed/species_mapping.pkl', 'wb') as f:
         pickle.dump(species_to_int, f)
-    
+
     print(f"\n💾 Saved to ./data/processed/")
-    print(f"   - X_train.npy: {X_train.nbytes / 1e6:.1f} MB")
+    print(f"   - X_train_variable.pkl: Variable-length spectrograms")
+    print(f"   - X_test_variable.pkl: Variable-length spectrograms")
     print(f"   - y_train.npy: {y_train.nbytes / 1e6:.1f} MB")
-    print(f"   - X_test.npy:  {X_test.nbytes / 1e6:.1f} MB")
-    print(f"   - y_test.npy:  {y_test.nbytes / 1e6:.1f} MB")
+    print(f"   - y_test.npy: {y_test.nbytes / 1e6:.1f} MB")
     print(f"   - species_mapping.pkl")
     
     # Print species mapping

@@ -39,4 +39,3 @@ def load_model(filepath):
     model = load_model(filepath)
     return model
 
-# This file is intentionally left blank.
