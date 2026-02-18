@@ -1,6 +1,6 @@
 {
-  "evaluation_date": "2026-02-18T10:38:49.660688",
-  "test_set_size": 325,
+  "evaluation_date": "2026-02-18T15:46:34.294051",
+  "test_set_size": 300,
   "num_classes": 27,
   "species_mapping": {
     "Atlantic_Spotted_Dolphin": 0,
@@ -32,23 +32,23 @@
     "White-sided_Dolphin": 26
   },
   "model_used": "Enhanced CNN",
-  "test_accuracy": 0.5384615384615384,
-  "macro_f1_score": 0.5102164197323863,
-  "weighted_f1_score": 0.5150211827276933,
+  "test_accuracy": 0.5366666666666666,
+  "macro_f1_score": 0.5065817437892484,
+  "weighted_f1_score": 0.5137450014162233,
   "per_class_results": [
     {
       "Species": "Fin, Finback Whale",
-      "Support": 10,
+      "Support": 6,
       "Precision": 1.0,
       "Recall": 1.0,
       "F1-Score": 1.0
     },
     {
       "Species": "Humpback Whale",
-      "Support": 13,
-      "Precision": 0.8571,
-      "Recall": 0.9231,
-      "F1-Score": 0.8889
+      "Support": 12,
+      "Precision": 0.8462,
+      "Recall": 0.9167,
+      "F1-Score": 0.88
     },
     {
       "Species": "Spinner Dolphin",
@@ -87,10 +87,17 @@
     },
     {
       "Species": "Sperm Whale",
-      "Support": 15,
+      "Support": 13,
       "Precision": 0.875,
-      "Recall": 0.4667,
-      "F1-Score": 0.6087
+      "Recall": 0.5385,
+      "F1-Score": 0.6667
+    },
+    {
+      "Species": "False Killer Whale",
+      "Support": 10,
+      "Precision": 0.5,
+      "Recall": 0.8,
+      "F1-Score": 0.6154
     },
     {
       "Species": "White-beaked Dolphin",
@@ -107,6 +114,13 @@
       "F1-Score": 0.5882
     },
     {
+      "Species": "Northern Right Whale",
+      "Support": 11,
+      "Precision": 0.45,
+      "Recall": 0.8182,
+      "F1-Score": 0.5806
+    },
+    {
       "Species": "Rough-Toothed Dolphin",
       "Support": 10,
       "Precision": 0.5455,
@@ -114,18 +128,11 @@
       "F1-Score": 0.5714
     },
     {
-      "Species": "Northern Right Whale",
-      "Support": 11,
-      "Precision": 0.4286,
-      "Recall": 0.8182,
-      "F1-Score": 0.5625
-    },
-    {
-      "Species": "False Killer Whale",
-      "Support": 12,
-      "Precision": 0.4706,
-      "Recall": 0.6667,
-      "F1-Score": 0.5517
+      "Species": "Frasers Dolphin",
+      "Support": 18,
+      "Precision": 0.6667,
+      "Recall": 0.4444,
+      "F1-Score": 0.5333
     },
     {
       "Species": "Killer Whale",
@@ -135,31 +142,24 @@
       "F1-Score": 0.5263
     },
     {
-      "Species": "Frasers Dolphin",
-      "Support": 18,
-      "Precision": 0.6154,
-      "Recall": 0.4444,
-      "F1-Score": 0.5161
+      "Species": "Bearded Seal",
+      "Support": 7,
+      "Precision": 0.4,
+      "Recall": 0.5714,
+      "F1-Score": 0.4706
     },
     {
-      "Species": "Melon Headed Whale",
-      "Support": 13,
-      "Precision": 0.5455,
-      "Recall": 0.4615,
-      "F1-Score": 0.5
+      "Species": "Striped Dolphin",
+      "Support": 15,
+      "Precision": 0.5,
+      "Recall": 0.4,
+      "F1-Score": 0.4444
     },
     {
       "Species": "Narwhal",
       "Support": 10,
       "Precision": 0.5,
       "Recall": 0.4,
-      "F1-Score": 0.4444
-    },
-    {
-      "Species": "Bearded Seal",
-      "Support": 7,
-      "Precision": 0.3636,
-      "Recall": 0.5714,
       "F1-Score": 0.4444
     },
     {
@@ -170,20 +170,6 @@
       "F1-Score": 0.4444
     },
     {
-      "Species": "Grampus, Rissos Dolphin",
-      "Support": 13,
-      "Precision": 0.3478,
-      "Recall": 0.6154,
-      "F1-Score": 0.4444
-    },
-    {
-      "Species": "Striped Dolphin",
-      "Support": 16,
-      "Precision": 0.5,
-      "Recall": 0.375,
-      "F1-Score": 0.4286
-    },
-    {
       "Species": "Short-Finned Pacific Pilot Whale",
       "Support": 14,
       "Precision": 0.4286,
@@ -192,10 +178,24 @@
     },
     {
       "Species": "Pantropical Spotted Dolphin",
-      "Support": 13,
+      "Support": 11,
       "Precision": 0.5,
-      "Recall": 0.2308,
-      "F1-Score": 0.3158
+      "Recall": 0.2727,
+      "F1-Score": 0.3529
+    },
+    {
+      "Species": "Melon Headed Whale",
+      "Support": 8,
+      "Precision": 0.5,
+      "Recall": 0.25,
+      "F1-Score": 0.3333
+    },
+    {
+      "Species": "Grampus, Rissos Dolphin",
+      "Support": 7,
+      "Precision": 0.2143,
+      "Recall": 0.4286,
+      "F1-Score": 0.2857
     },
     {
       "Species": "Long-Finned Pilot Whale",
@@ -213,14 +213,14 @@
     },
     {
       "Species": "Clymene Dolphin",
-      "Support": 13,
+      "Support": 12,
       "Precision": 0.0,
       "Recall": 0.0,
       "F1-Score": 0.0
     },
     {
       "Species": "Common Dolphin",
-      "Support": 10,
+      "Support": 9,
       "Precision": 0.0,
       "Recall": 0.0,
       "F1-Score": 0.0
@@ -353,7 +353,7 @@
       0,
       0,
       1,
-      2,
+      1,
       0,
       0,
       0,
@@ -387,7 +387,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       1,
@@ -411,7 +411,7 @@
       8,
       0,
       0,
-      3,
+      1,
       0,
       0,
       0,
@@ -438,7 +438,7 @@
       0,
       0,
       0,
-      10,
+      6,
       0,
       0,
       0,
@@ -490,7 +490,7 @@
     ],
     [
       0,
-      2,
+      1,
       0,
       0,
       1,
@@ -498,7 +498,7 @@
       0,
       0,
       1,
-      8,
+      3,
       0,
       0,
       0,
@@ -558,7 +558,7 @@
       0,
       0,
       0,
-      12,
+      11,
       0,
       0,
       0,
@@ -643,12 +643,12 @@
       0,
       0,
       1,
-      2,
+      1,
       1,
       0,
       0,
       0,
-      6,
+      2,
       0,
       0,
       0,
@@ -727,7 +727,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -737,7 +737,7 @@
       0,
       0,
       1,
-      1,
+      0,
       3,
       0,
       0,
@@ -845,13 +845,13 @@
       0,
       0,
       0,
-      1,
+      0,
       2,
       1,
       1,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -909,7 +909,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
