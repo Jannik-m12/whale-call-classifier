@@ -1,5 +1,5 @@
 {
-  "evaluation_date": "2026-02-18T15:46:34.294051",
+  "evaluation_date": "2026-02-19T08:55:28.683928",
   "test_set_size": 300,
   "num_classes": 27,
   "species_mapping": {
@@ -1012,10 +1012,10 @@
     ]
   ],
   "model_comparison": {
-    "baseline_test_acc": 0.20615383982658386,
-    "enhanced_test_acc": 0.5600000023841858,
-    "improvement_percentage_points": 35.38461625576019,
-    "baseline_parameters": "N/A",
-    "enhanced_parameters": 1448443
+    "baseline_test_acc": 0.28333333134651184,
+    "enhanced_test_acc": 0.28333333134651184,
+    "improvement_percentage_points": 0.0,
+    "baseline_parameters": 7928987,
+    "enhanced_parameters": 7928987
   }
 }
